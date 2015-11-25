@@ -1,5 +1,5 @@
 # vim: sts=2 ts=2 sw=2 et ai
-{% from "compute/map.jinja" import compute with context %}
+{% from "openstack/compute/map.jinja" import compute with context %}
 
 kilo-apt:
   pkgrepo.managed:
@@ -32,29 +32,34 @@ docker-apt:
 #      - neutron-plugin-openvswitch-agent
 
 #Configure files
-configure-neutron-plugin:
+install-neutron-plugin:
   pkg.installed:
     - pkgs:
       - neutron-plugin-ml2
       - neutron-plugin-openvswitch-agent
+
+configure-neutron:
   file.managed:
     - name: /etc/neutron/neutron.conf
-    - source: salt://openstack/compute/neutron.conf
+    - source: salt://openstack/compute/files/neutron.conf
     - user: neutron
     - group: neutron
     - mode: 644
     - context:
-      - data: {{ compute.get('openstack:compute:neutron')}}
+        data: {{ compute.get('openstack:compute:neutron')}}
+
+configure-ml2-plugin:
   file.managed:
     - name: /etc/neutron/plugins/ml2/ml2_conf.ini
-    - source: salt://openstack/compute/ml2_conf.ini
+    - source: salt://openstack/compute/files/ml2_conf.ini
     - user: neutron
     - group: neutron
     - mode: 644
     - context:
-      - data: {{ compute.get('openstack:compute:neutron')}}
+        data: {{ compute.get('openstack:compute:neutron')}}
+
+"neutron-plugin-openvswitch-agent":
   service.running:
-    - name: "neutron-plugin-openvswitch-agent"
     - enable: True
     - reload: True
 
@@ -102,3 +107,4 @@ configure-neutron-plugin:
 #    - name: |
 #        cd /opt && git clone http://gitlab01.core.irknet.lan/devops/novadocker.git && cd novadocker && python setup.py install
 #
+
