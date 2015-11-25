@@ -1,0 +1,22 @@
+# vim: sts=2 ts=2 sw=2 et ai
+openstack:
+  compute:
+    internal_ip: 10.0.0.12
+    driver: novadocker.virt.docker.DockerDriver
+    novncproxy_base_ip: 10.0.0.12
+    keystone: 		
+      password: pass
+      host: controller
+    glance:
+      host: controller
+    neutron:
+      host: controller
+      password: pass
+      meta_password: pass
+    rabbitmq: 		
+      name: openstack 		
+      password: pass 		
+      host: controller		
+    mysql:
+      host: database 		
+      password: pass 		
