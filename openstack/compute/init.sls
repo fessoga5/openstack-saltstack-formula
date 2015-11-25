@@ -1,4 +1,6 @@
 # vim: sts=2 ts=2 sw=2 et ai
+{% from "compute/map.jinja" import compute with context %}
+
 kilo-apt:
   pkgrepo.managed:
     - humanname: Openstack PPA
@@ -42,7 +44,7 @@ configure-neutron-plugin:
     - group: neutron
     - mode: 644
     - context:
-      - data: {{pillar.get['openstack:compute:neutron']}}
+      - data: {{ compute.get('openstack:compute:neutron')}}
   file.managed:
     - name: /etc/neutron/plugins/ml2/ml2_conf.ini
     - source: salt://openstack/compute/ml2_conf.ini
@@ -50,7 +52,7 @@ configure-neutron-plugin:
     - group: neutron
     - mode: 644
     - context:
-      - data: {{pillar.get['openstack:compute:neutron']}}
+      - data: {{ compute.get('openstack:compute:neutron')}}
   service.running:
     - name: "neutron-plugin-openvswitch-agent"
     - enable: True
