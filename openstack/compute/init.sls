@@ -84,13 +84,6 @@ novacompute-install:
     - context:
         data: {{ compute }}
 
-nova-compute:
-  service.running:
-    - enable: True
-    - reload: True
-    - watch:
-      - file: /etc/nova/nova-compute.conf
-      - file: /etc/nova/nova.conf
 
 # install and configure docker
 docker-openstack:
@@ -106,6 +99,7 @@ docker-openstack:
     - pkgs:
       - lxc-docker-1.7.1
       - git
+      - python-pip
   file.managed:
     - name: /etc/default/docker
     - source: salt://openstack/compute/files/docker
@@ -127,11 +121,22 @@ docker-openstack:
     - require:
       - pkg: docker-openstack
   cmd.run:
+    - user: nova
     - name: |
-        sudo -u nova bash -c \"cd /opt/novadocker && python setup.py install\"
+        cd /opt/novadocker && python setup.py install
     - require:
       - git: docker-openstack
 
+#running nova compute
+nova-compute:
+  service.running:
+    - enable: True
+    - reload: True
+    - watch:
+      - file: /etc/nova/nova-compute.conf
+      - file: /etc/nova/nova.conf
+    - require:
+      - service: docker-openstack
 #
 install_ceph_raid:
   pkg.installed:
