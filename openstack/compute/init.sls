@@ -46,15 +46,6 @@ docker-apt:
 #    - name: |
 #        cd /opt && git clone http://gitlab01.core.irknet.lan/devops/novadocker.git && cd novadocker && python setup.py install
 
-#compute-install-packages:
-#  pkg.installed:
-#    - forceyes: True
-#    - pkgs:
-#      - nova-compute 
-#      - sysfsutils
-#      - lxc-docker-1.7.1
-#      - neutron-plugin-ml2
-#      - neutron-plugin-openvswitch-agent
 
 #Configure files
 install-neutron-plugin:
@@ -137,7 +128,7 @@ nova-compute:
 #
 install_ceph_raid:
   pkg.installed:
-    - name: sysfsutils
+    - name: ceph
     - forceyes: True
   file.managed:
     - name: /etc/ceph/rbdmap
