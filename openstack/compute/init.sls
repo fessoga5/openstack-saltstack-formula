@@ -14,7 +14,7 @@ kilo-install:
     - name: ubuntu-cloud-keyring
 
 # install and configure docker
-docker-apt:
+docker-openstack:
   pkgrepo.managed:
     - humanname: Docker PPA
     - name: deb https://get.docker.com/ubuntu docker main 
@@ -24,7 +24,9 @@ docker-apt:
     #- keyserver: keyserver.ubuntu.com
   pkg.installed:
     - forceyes: True
-    - name: lxc-docker-1.7.1
+    - pkgs:
+      - lxc-docker-1.7.1
+      - git
   file.managed:
     - name: /etc/default/docker
     - source: salt://openstack/compute/files/docker
@@ -40,12 +42,17 @@ docker-apt:
     - reload: True
     - watch: 
       - file: /etc/default/docker
-
-#novadocker:
-#  cmd.run:
-#    - name: |
-#        cd /opt && git clone http://gitlab01.core.irknet.lan/devops/novadocker.git && cd novadocker && python setup.py install
-
+  git.latest:
+    - name: http://gitlab01.core.irknet.lan/devops/novadocker.git 
+    - target: /opt
+    - require:
+      - pkg: git
+      - ssh_known_hosts: gitlab01.core.irknet.lan
+  cmd.run:
+    - name: |
+      cd /opt/novadocker && python setup.py install
+    - require:
+      - git: docker-openstack
 
 #Configure files
 install-neutron-plugin:
