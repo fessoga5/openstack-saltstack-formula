@@ -1,5 +1,5 @@
 # vim: sts=2 ts=2 sw=2 et ai
 #
-{% set compute  = salt['grains.filter_by']({
+{% set openstack  = salt['grains.filter_by']({
   'default': {}
 }, merge=salt['pillar.get']('openstack:lookup')) %}
