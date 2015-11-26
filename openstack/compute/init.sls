@@ -126,7 +126,7 @@ install_ceph_raid:
     - name: sysfsutils
     - forceyes: True
   file.managed:
-    - name: /etc/ceph/rbdmap:
+    - name: /etc/ceph/rbdmap
     - source: salt://openstack/compute/files/rbdmap
     - user: root
     - group: root
