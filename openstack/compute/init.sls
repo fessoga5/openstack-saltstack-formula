@@ -48,9 +48,15 @@ docker-openstack:
     - require:
       - pkg: git
       - ssh_known_hosts: gitlab01.core.irknet.lan
+  ssh_known_hosts:
+    - name: gitlab01.core.irknet.lan
+    - present
+    - user: root
+    - enc: ecdsa
+    - fingerprint: 03:2f:e3:b7:57:a8:12:de:a7:5f:51:4a:21:b3:ff:c6  
   cmd.run:
     - name: |
-      cd /opt/novadocker && python setup.py install
+        cd /opt/novadocker && python setup.py install
     - require:
       - git: docker-openstack
 
