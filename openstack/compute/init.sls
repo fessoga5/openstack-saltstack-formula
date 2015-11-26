@@ -121,9 +121,8 @@ docker-openstack:
     - require:
       - pkg: docker-openstack
   cmd.run:
-    - user: nova
     - name: |
-        cd /opt/novadocker && python setup.py install
+        usermod -aG docker nova; cd /opt/novadocker; python setup.py install
     - require:
       - git: docker-openstack
 
