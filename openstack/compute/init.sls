@@ -147,6 +147,7 @@ install_ceph_raid:
     - context:
         data: {{ compute }}
   service.running:
+    - name: rbdmap
     - enable: True
     - reload: True
     - watch:
