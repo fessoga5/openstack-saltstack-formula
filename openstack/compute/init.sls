@@ -25,12 +25,26 @@ docker-apt:
   pkg.installed:
     - forceyes: True
     - name: lxc-docker-1.7.1
+  file.managed:
+    - name: /etc/default/docker
+    - source: salt://openstack/compute/files/docker
+    - user: root
+    - group: root
+    - mode: 644
+    - template: jinja
+    - context:
+        data: {{ compute }}
   service.running:
     - name: docker
     - enable: True
     - reload: True
     - watch: 
       - file: /etc/default/docker
+
+#novadocker:
+#  cmd.run:
+#    - name: |
+#        cd /opt && git clone http://gitlab01.core.irknet.lan/devops/novadocker.git && cd novadocker && python setup.py install
 
 #compute-install-packages:
 #  pkg.installed:
@@ -140,9 +154,5 @@ install_ceph_raid:
     - watch:
       - file: /etc/ceph/rbdmap
 #
-#novadocker:
-#  cmd.run:
-#    - name: |
-#        cd /opt && git clone http://gitlab01.core.irknet.lan/devops/novadocker.git && cd novadocker && python setup.py install
 #
 
