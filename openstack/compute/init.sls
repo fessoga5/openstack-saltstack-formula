@@ -13,6 +13,7 @@ kilo-install:
   pkg.installed:
     - name: ubuntu-cloud-keyring
 
+# install and configure docker
 docker-apt:
   pkgrepo.managed:
     - humanname: Docker PPA
@@ -21,6 +22,15 @@ docker-apt:
     - file: /etc/apt/sources.list.d/docker.list
     #- keyid: 
     #- keyserver: keyserver.ubuntu.com
+  pkg.installed:
+    - forceyes: True
+    - name: lxc-docker-1.7.1
+  service.running:
+    - name: docker
+    - enable: True
+    - reload: True
+    - watch: 
+      - file: /etc/default/docker
 
 #compute-install-packages:
 #  pkg.installed:
@@ -65,45 +75,70 @@ configure-ml2-plugin:
   service.running:
     - enable: True
     - reload: True
+    - watch:
+      - file: /etc/neutron/plugins/ml2/ml2_conf.ini
+
+openvswitch-switch:
+  service.running:
+    - enable: True
+    - reload: True
+    - watch:
+      - file: /etc/neutron/plugins/ml2/ml2_conf.ini  
 
 
-#/etc/nova/nova.conf:
-#  file.managed:
-#    - source: salt://openstack/compute/nova.conf
-#    - user: nova
-#    - group: nova
-#    - mode: 644
+# Nova compute install and configure 
+novacompute-install:
+  pkg.installed:
+    - forceyes: True
+    - name: nova-compute 
+
+"/etc/nova/nova.conf":
+  file.managed:
+    - source: salt://openstack/compute/files/nova.conf
+    - user: nova
+    - group: nova
+    - mode: 644
+    - template: jinja
+    - context:
+        data: {{ compute }}
+
+"/etc/nova/nova-compute.conf":
+  file.managed:
+    - source: salt://openstack/compute/files/nova-compute.conf
+    - user: nova
+    - group: nova
+    - mode: 644
+    - template: jinja
+    - context:
+        data: {{ compute }}
+
+nova-compute:
+  service.running:
+    - enable: True
+    - reload: True
+    - watch:
+      - file: /etc/nova/nova-compute.conf
+      - file: /etc/nova/nova.conf
+
 #
-#/etc/nova/nova-compute.conf:
-#  file.managed:
-#    - source: salt://openstack/compute/nova-compute.conf
-#    - user: nova
-#    - group: nova
-#    - mode: 644
-#
-#/etc/ceph/rbdmap:
-#  file.managed:
-#    - source: salt://openstack/compute/rbdmap
-#    - user: root
-#    - group: root
-#    - mode: 644
-#    - makedirs: True
-#
-#
-#openvswitch-switch:
-#  service.running:
-#    - enable: True
-#    - reload: True
-#
-#nova-compute:
-#  service.running:
-#    - enable: True
-#    - reload: True
-#
-#docker:
-#  service.running:
-#    - enable: True
-#    - reload: True
+install_ceph_raid:
+  pkg.installed:
+    - name: sysfsutils
+    - forceyes: True
+  file.managed:
+    - name: /etc/ceph/rbdmap:
+    - source: salt://openstack/compute/files/rbdmap
+    - user: root
+    - group: root
+    - mode: 644
+    - makedirs: True
+    - watch:
+      - file: /etc/ceph/rbdmap
+  service.running:
+    - enable: True
+    - reload: True
+    - watch:
+      - file: /etc/ceph/rbdmap
 #
 #novadocker:
 #  cmd.run:
