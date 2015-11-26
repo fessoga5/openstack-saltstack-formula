@@ -45,8 +45,9 @@ configure-neutron:
     - user: neutron
     - group: neutron
     - mode: 644
+    - template: jinja
     - context:
-        data: {{ compute.get('openstack:compute:neutron')}}
+        data: {{ compute.get('compute:neutron')}}
 
 configure-ml2-plugin:
   file.managed:
@@ -55,8 +56,9 @@ configure-ml2-plugin:
     - user: neutron
     - group: neutron
     - mode: 644
+    - template: jinja
     - context:
-        data: {{ compute.get('openstack:compute:neutron')}}
+        data: {{ compute.get('compute:neutron')}}
 
 "neutron-plugin-openvswitch-agent":
   service.running:

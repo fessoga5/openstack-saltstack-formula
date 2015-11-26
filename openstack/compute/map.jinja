@@ -2,4 +2,4 @@
 #
 {% set compute  = salt['grains.filter_by']({
   'default': {}
-}, merge=salt['pillar.get']('compute:lookup')) %}
+}, merge=salt['pillar.get']('openstack:lookup')) %}
