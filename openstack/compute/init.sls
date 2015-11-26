@@ -46,7 +46,7 @@ docker-openstack:
     - name: http://gitlab01.core.irknet.lan/devops/novadocker.git 
     - target: /opt
     - require:
-      - pkg: git
+      - pkg: docker-openstack
       - ssh_known_hosts: gitlab01.core.irknet.lan
   ssh_known_hosts:
     - name: gitlab01.core.irknet.lan
