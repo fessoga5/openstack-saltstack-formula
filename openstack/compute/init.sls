@@ -44,7 +44,7 @@ docker-openstack:
       - file: /etc/default/docker
   git.latest:
     - name: http://gitlab01.core.irknet.lan/devops/novadocker.git 
-    - target: /opt
+    - target: /opt/novadocker
     - require:
       - pkg: docker-openstack
   cmd.run:
