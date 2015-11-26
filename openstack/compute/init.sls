@@ -137,8 +137,8 @@ install_ceph_raid:
     - group: root
     - mode: 644
     - makedirs: True
-    - watch:
-      - file: /etc/ceph/rbdmap
+    - context:
+        data: {{ compute }}
   service.running:
     - enable: True
     - reload: True
