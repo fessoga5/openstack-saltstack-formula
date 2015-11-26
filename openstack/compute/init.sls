@@ -13,45 +13,6 @@ kilo-install:
   pkg.installed:
     - name: ubuntu-cloud-keyring
 
-# install and configure docker
-docker-openstack:
-  pkgrepo.managed:
-    - humanname: Docker PPA
-    - name: deb https://get.docker.com/ubuntu docker main 
-    - dist: docker
-    - file: /etc/apt/sources.list.d/docker.list
-    #- keyid: 
-    #- keyserver: keyserver.ubuntu.com
-  pkg.installed:
-    - forceyes: True
-    - pkgs:
-      - lxc-docker-1.7.1
-      - git
-  file.managed:
-    - name: /etc/default/docker
-    - source: salt://openstack/compute/files/docker
-    - user: root
-    - group: root
-    - mode: 644
-    - template: jinja
-    - context:
-        data: {{ compute }}
-  service.running:
-    - name: docker
-    - enable: True
-    - reload: True
-    - watch: 
-      - file: /etc/default/docker
-  git.latest:
-    - name: http://gitlab01.core.irknet.lan/devops/novadocker.git 
-    - target: /opt/novadocker
-    - require:
-      - pkg: docker-openstack
-  cmd.run:
-    - name: |
-        cd /opt/novadocker && python setup.py install
-    - require:
-      - git: docker-openstack
 
 #Configure files
 install-neutron-plugin:
@@ -130,6 +91,46 @@ nova-compute:
     - watch:
       - file: /etc/nova/nova-compute.conf
       - file: /etc/nova/nova.conf
+
+# install and configure docker
+docker-openstack:
+  pkgrepo.managed:
+    - humanname: Docker PPA
+    - name: deb https://get.docker.com/ubuntu docker main 
+    - dist: docker
+    - file: /etc/apt/sources.list.d/docker.list
+    #- keyid: 
+    #- keyserver: keyserver.ubuntu.com
+  pkg.installed:
+    - forceyes: True
+    - pkgs:
+      - lxc-docker-1.7.1
+      - git
+  file.managed:
+    - name: /etc/default/docker
+    - source: salt://openstack/compute/files/docker
+    - user: root
+    - group: root
+    - mode: 644
+    - template: jinja
+    - context:
+        data: {{ compute }}
+  service.running:
+    - name: docker
+    - enable: True
+    - reload: True
+    - watch: 
+      - file: /etc/default/docker
+  git.latest:
+    - name: http://gitlab01.core.irknet.lan/devops/novadocker.git 
+    - target: /opt/novadocker
+    - require:
+      - pkg: docker-openstack
+  cmd.run:
+    - name: |
+        sudo -u nova bash -c \"cd /opt/novadocker && python setup.py install\"
+    - require:
+      - git: docker-openstack
 
 #
 install_ceph_raid:
