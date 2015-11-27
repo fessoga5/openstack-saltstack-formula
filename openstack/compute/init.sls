@@ -5,9 +5,9 @@
 kilo-apt:
   pkgrepo.managed:
     - humanname: Openstack PPA
-    - name: deb http://ubuntu-cloud.archive.canonical.com/ubuntu trusty-updates/kilo main
-    - dist: trusty-updates/kilo
-    - file: /etc/apt/sources.list.d/cloudarchive-kilo.list
+    - name: {{ openstack-repo | deb http://ubuntu-cloud.archive.canonical.com/ubuntu trusty-updates/kilo main }}
+    - dist: trusty-updates/{{ openstack-version | kilo }}
+    - file: /etc/apt/sources.list.d/cloudarchive.list
 
 kilo-install:
   pkg.installed:

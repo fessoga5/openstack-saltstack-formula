@@ -1,5 +1,8 @@
 # vim: sts=2 ts=2 sw=2 et ai
 #
 {% set openstack  = salt['grains.filter_by']({
-  'default': {}
+  'default': {
+    openstack-repo: "deb http://ubuntu-cloud.archive.canonical.com/ubuntu trusty-updates/kilo main",
+    version: "kilo"
+  }
 }, merge=salt['pillar.get']('openstack:lookup')) %}
