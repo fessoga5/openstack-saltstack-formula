@@ -1,6 +1,6 @@
 # vim: sts=2 ts=2 sw=2 et ai
 #
-{% set my_ip = pillar.get("openstack:my_ip", "127.0.0.1") %}
+{% set my_ip = salt['pillar.get']("openstack:compute:my_ip", "127.0.0.1") %}
 {% set computeversion  = salt['grains.filter_by']({
   'Debian': {
     'liberty': {
@@ -89,8 +89,8 @@
         'vnc': {
           'enable': 'True',
           'vncserver_listen': '0.0.0.0 ',
-          'vncserver_proxyclient_address': '10.100.0.24',
-          'novncproxy_base_url': 'http://10.100.0.24:6080/vnc_auto.html'
+          'vncserver_proxyclient_address': my_ip,
+          'novncproxy_base_url': 'http://'+my_ip+':6080/vnc_auto.html'
         },
         'database': {
           'connection': 'mysql+pymysql://nova:12345@database/nova',

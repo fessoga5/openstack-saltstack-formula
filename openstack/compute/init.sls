@@ -97,8 +97,9 @@ docker-openstack:
     #- keyserver: keyserver.ubuntu.com
   pkg.installed:
     - forceyes: True
+    - skip_verify: True
     - pkgs:
-      - lxc-docker-1.7.1
+      - {{ compute.novadocker.version | default("lxc-docker-1.9.1") }}
       - git
       - python-pip
   file.managed:
