@@ -1,16 +1,16 @@
 # vim: sts=2 ts=2 sw=2 et ai
 {% from "openstack/compute/map.jinja" import openstack with context %}
 {% from "openstack/compute/defaults.jinja" import computeversion with context %}
-{% set compute = computeversion.get(str(openstack.version), {}) %}
+{% set compute = computeversion.get(openstack.version, {}) %}
 
-kilo-apt:
+openstack-apt:
   pkgrepo.managed:
-    - humanname: Openstack PPA
-    - name: {{ openstack.openstack-repo }}
+    - humanname: 'Openstack PPA'
+    - name: {{ openstack.get("openstack-repo") }}
     - dist: trusty-updates/{{ openstack.version }}
     - file: /etc/apt/sources.list.d/cloudarchive.list
 
-kilo-install:
+openstack-install:
   pkg.installed:
     - name: ubuntu-cloud-keyring
 
@@ -83,7 +83,7 @@ novacompute-install:
     - mode: 644
     - template: jinja
     - context:
-        data: {{ compute.nova-compute }}
+        data: {{ compute.get("nova-compute") }}
 
 
 # install and configure docker
@@ -117,8 +117,8 @@ docker-openstack:
     - watch: 
       - file: /etc/default/docker
   git.latest:
-    - name: {{ openstack.novadocker.repo }} 
-    - rev: {{ openstack.novadocker.revision }}
+    - name: {{ compute.novadocker.repo }} 
+    - rev: {{ compute.novadocker.revision }}
     - target: /opt/novadocker
     - require:
       - pkg: docker-openstack

@@ -1,11 +1,10 @@
 # vim: sts=2 ts=2 sw=2 et ai
 #
-{% set openstack  = salt['grains.filter_by']({
+{% set my_ip = pillar.get("openstack:my_ip", "127.0.0.1") %}
+{% set computeversion  = salt['grains.filter_by']({
   'Debian': {
-    #LIBERTY
     'liberty': {
 
-      # Configure neutron.conf from LIBERTY
       'neutron': {
 
         'default': {
@@ -44,23 +43,21 @@
 
       },
       
-      #Configure /etc/neutron/plugins/ml2/ml2_conf.ini
       'ml2_conf': {
 
         'ml2': {
           'type_drivers': 'local,flat,gre'
-        }
+        },
 
         'ovs': {
-          'local_ip': {{ my_ip }} 
+          'local_ip': my_ip 
         }
 
-      }
+      },
 
-      #Configure /etc/nova/nova.conf
       'nova': { 
         'DEFAULT': {
-          'my_ip': {{ my_ip }},
+          'my_ip': my_ip, 
           'dhcpbridge_flagfile': '/etc/nova/nova.conf',
           'dhcpbridge': '/usr/bin/nova-dhcpbridge',
           'log_dir': '/var/log/nova',
@@ -88,16 +85,16 @@
           'compute_driver': 'novadocker.virt.docker.DockerDriver',
           'network_device_mtu': '1400',
           'resume_guests_state_on_host_boot': 'True'
-        }
+        },
         'vnc': {
           'enable': 'True',
           'vncserver_listen': '0.0.0.0 ',
           'vncserver_proxyclient_address': '10.100.0.24',
           'novncproxy_base_url': 'http://10.100.0.24:6080/vnc_auto.html'
-        }
+        },
         'database': {
           'connection': 'mysql+pymysql://nova:12345@database/nova',
-        }
+        },
         'keystone_authtoken': {
           'auth_uri': 'http://controller:5000',
           'auth_url': 'http://controller:35357',
@@ -107,10 +104,10 @@
           'project_name': 'service',
           'username': 'nova',
           'password': '12345'
-        }
+        },
         'glance': {
           'host': 'controller'
-        }
+        },
         'neutron': {
           'service_metadata_proxy': 'True',
           'metadata_proxy_shared_secret': '123',
@@ -150,14 +147,17 @@
         },
       },
 
-      #Configure /etc/nova/nova-compute.conf
       'nova-compute': {
         'DEFAULT': {
           'compute_driver': 'novadocker.virt.docker.DockerDriver',
         }
       },
+
+      'novadocker': {
+        'repo': 'https://github.com/openstack/nova-docker.git',
+        'revision': 'stable/liberty'
+      },
     },
-    # KILO
     'kilo': {
     }
 
