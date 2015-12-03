@@ -1,12 +1,13 @@
 # vim: sts=2 ts=2 sw=2 et ai
 {% from "openstack/compute/map.jinja" import openstack with context %}
-{% set compute = pillar.get('openstack').compute  %}
+{% from "openstack/compute/defaults.jinja" import computeversion with context %}
+{% set compute = computeversion.get(str(openstack.version), {}) %}
 
 kilo-apt:
   pkgrepo.managed:
     - humanname: Openstack PPA
-    - name: {{ openstack-repo | deb http://ubuntu-cloud.archive.canonical.com/ubuntu trusty-updates/kilo main }}
-    - dist: trusty-updates/{{ openstack-version | kilo }}
+    - name: {{ openstack.openstack-repo }}
+    - dist: trusty-updates/{{ openstack.version }}
     - file: /etc/apt/sources.list.d/cloudarchive.list
 
 kilo-install:
@@ -24,24 +25,24 @@ install-neutron-plugin:
 configure-neutron:
   file.managed:
     - name: /etc/neutron/neutron.conf
-    - source: salt://openstack/compute/files/neutron.conf
+    - source: salt://openstack/compute/files/{{ openstack.version }}/neutron.conf
     - user: neutron
     - group: neutron
     - mode: 644
     - template: jinja
     - context:
-        data: {{ compute }}
+        data: {{ compute.neutron }}
 
 configure-ml2-plugin:
   file.managed:
     - name: /etc/neutron/plugins/ml2/ml2_conf.ini
-    - source: salt://openstack/compute/files/ml2_conf.ini
+    - source: salt://openstack/compute/files/{{ openstack.version }}/ml2_conf.ini
     - user: neutron
     - group: neutron
     - mode: 644
     - template: jinja
     - context:
-        data: {{ compute }}
+        data: {{ compute.ml2_conf }}
 
 "neutron-plugin-openvswitch-agent":
   service.running:
@@ -66,23 +67,23 @@ novacompute-install:
 
 "/etc/nova/nova.conf":
   file.managed:
-    - source: salt://openstack/compute/files/nova.conf
+    - source: salt://openstack/compute/files/{{ openstack.version }}/general.jinja
     - user: nova
     - group: nova
     - mode: 644
     - template: jinja
     - context:
-        data: {{ compute }}
+        data: {{ compute.nova }}
 
 "/etc/nova/nova-compute.conf":
   file.managed:
-    - source: salt://openstack/compute/files/nova-compute.conf
+    - source: salt://openstack/compute/files/{{ openstack.version }}/general.jinja
     - user: nova
     - group: nova
     - mode: 644
     - template: jinja
     - context:
-        data: {{ compute }}
+        data: {{ compute.nova-compute }}
 
 
 # install and configure docker
@@ -102,7 +103,7 @@ docker-openstack:
       - python-pip
   file.managed:
     - name: /etc/default/docker
-    - source: salt://openstack/compute/files/docker
+    - source: salt://openstack/compute/files/{{ openstack.version }}/docker
     - user: root
     - group: root
     - mode: 644
@@ -116,7 +117,8 @@ docker-openstack:
     - watch: 
       - file: /etc/default/docker
   git.latest:
-    - name: http://gitlab01.core.irknet.lan/devops/novadocker.git 
+    - name: {{ openstack.novadocker.repo }} 
+    - rev: {{ openstack.novadocker.revision }}
     - target: /opt/novadocker
     - require:
       - pkg: docker-openstack
@@ -137,25 +139,25 @@ nova-compute:
     - require:
       - service: docker-openstack
 #
-install_ceph_raid:
-  pkg.installed:
-    - name: ceph
-    - forceyes: True
-  file.managed:
-    - name: /etc/ceph/rbdmap
-    - source: salt://openstack/compute/files/rbdmap
-    - user: root
-    - group: root
-    - mode: 644
-    - makedirs: True
-    - context:
-        data: {{ compute }}
-  service.running:
-    - name: rbdmap
-    - enable: True
-    - reload: True
-    - watch:
-      - file: /etc/ceph/rbdmap
+#install_ceph_raid:
+#  pkg.installed:
+#    - name: ceph
+#    - forceyes: True
+#  file.managed:
+#    - name: /etc/ceph/rbdmap
+#    - source: salt://openstack/compute/files/rbdmap
+#    - user: root
+#    - group: root
+#    - mode: 644
+#    - makedirs: True
+#    - context:
+#        data: {{ compute }}
+#  service.running:
+#    - name: rbdmap
+#    - enable: True
+#    - reload: True
+#    - watch:
+#      - file: /etc/ceph/rbdmap
 #
 #
 

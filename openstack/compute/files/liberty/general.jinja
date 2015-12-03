@@ -1,0 +1,6 @@
+# Configure by SALTSTACK. https://github.com/fessoga5/openstack-saltstack-formula
+{% for section_key, section_value in data.items() %}
+[{{section_key}}]:
+{%for key,value in section_value.items() %}
+  key={{ value }}
+{%  endfor %}
