@@ -85,6 +85,12 @@ novacompute-install:
     - context:
         data: {{ compute.get("nova-compute") }}
 
+"/etc/nova/rootwrap.d/docker.filters":
+  file.managed:
+    - source: salt://openstack/compute/files/{{ openstack.version }}/docker.filters
+    - user: nova
+    - group: nova
+    - mode: 644
 
 # install and configure docker
 docker-openstack:
@@ -125,7 +131,7 @@ docker-openstack:
       - pkg: docker-openstack
   cmd.run:
     - name: |
-        usermod -aG docker nova; cd /opt/novadocker; python setup.py install
+        usermod -aG docker nova; cd /opt/novadocker; pip install -r requirements.txt; python setup.py install
     - require:
       - git: docker-openstack
 
