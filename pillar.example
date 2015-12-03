@@ -1,22 +1,19 @@
 # vim: sts=2 ts=2 sw=2 et ai
 openstack:
+  version: 'liberty'
   compute:
-    internal_ip: 10.0.0.12
-    driver: novadocker.virt.docker.DockerDriver
-    novncproxy_base_ip: 10.0.0.12
-    keystone: 		
-      password: pass
-      host: controller
-    glance:
-      host: controller
-    neutron:
-      host: controller
-      password: pass
-      meta_password: pass
-    rabbitmq: 		
-      name: openstack 		
-      password: pass 		
-      host: controller		
-    mysql:
-      host: database 		
-      password: pass 		
+    my_ip: '10.100.0.25'
+  novadocker:
+    repo: 'https://github.com/openstack/nova-docker.git'
+    revision: 'stable/liberty'
+
+# You can using any options, example:
+# openstack:
+#   compute:
+#     'nova':
+#       'docker':
+#         privileged: true
+#         {{ any }} : {{any value}}
+#
+#                IMPORTANT
+# All default settings contains in defaults.jinja
