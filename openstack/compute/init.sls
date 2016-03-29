@@ -1,7 +1,8 @@
 # vim: sts=2 ts=2 sw=2 et ai
 {% from "openstack/compute/map.jinja" import openstack with context %}
 {% from "openstack/compute/defaults.jinja" import computeversion with context %}
-{% set compute = computeversion.get(openstack.version, {}) %}
+#{% set compute = computeversion.get(openstack.version, {}) %}
+{% set compute = computeversion %}
 
 openstack-apt:
   pkgrepo.managed:

@@ -1,7 +1,8 @@
 # vim: sts=2 ts=2 sw=2 et ai
 #
 {% set my_ip = salt['pillar.get']("openstack:compute:my_ip", "127.0.0.1") %}
-{% set computeversion  = salt['grains.filter_by']({
+{% set version = salt['pillar.get']("openstack:version", "liberty") %}
+{% set os_map  = salt['grains.filter_by']({
   'Debian': {
     'liberty': {
 
@@ -165,4 +166,7 @@
     }
 
   }
-}, merge=salt['pillar.get']('openstack:compute')) %}
+},
+) %}
+
+{% set computeversion = salt['pillar.get']( 'openstack:compute', default=os_map.get(version, {} ), merge=True) %}
