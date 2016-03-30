@@ -1,0 +1,34 @@
+# vim: sts=2 ts=2 sw=2 et ai
+#
+{% set my_ip = salt['pillar.get']("openstack:compute:my_ip", "127.0.0.1") %}
+{% set version = salt['pillar.get']("openstack:version", "liberty") %}
+{% set os_map  = salt['grains.filter_by']({
+  'Debian': {
+    'liberty': {
+
+      'neutron': {
+
+        'ml2_conf': {
+
+          'ml2_type_flat': {
+            'flat_networks': 'physnet1,physnet2'
+          },
+
+          'ovs': {
+            'local_ip': my_ip,
+            'bridge_mappings': 'physnet1:br-eth1-300,physnet2:br-eth1-301'
+          }
+
+        },
+
+      },
+
+    #Other Release
+    'kilo': {
+    }
+
+  }
+},
+) %}
+
+{% set computeversion = salt['pillar.get']( 'openstack:compute', default=os_map.get(version, {} ), merge=True) %}
