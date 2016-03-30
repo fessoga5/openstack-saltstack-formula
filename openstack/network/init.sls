@@ -41,7 +41,7 @@ install-neutron-plugin:
 configure-neutron:
   file.managed:
     - name: /etc/neutron/neutron.conf
-    - source: salt://openstack/compute/files/{{ openstack.version }}/neutron.conf
+    - source: salt://openstack/network/files/{{ openstack.version }}/neutron.conf
     - user: neutron
     - group: neutron
     - mode: 644
@@ -53,7 +53,7 @@ configure-neutron:
 configure-ml2-plugin:
   file.managed:
     - name: /etc/neutron/plugins/ml2/ml2_conf.ini
-    - source: salt://openstack/compute/files/{{ openstack.version }}/ml2_conf.ini
+    - source: salt://openstack/network/files/{{ openstack.version }}/ml2_conf.ini
     - user: neutron
     - group: neutron
     - mode: 644
@@ -73,13 +73,13 @@ configure-ml2-plugin:
 "neutron-l3-agent":
   file.managed:
     - name: /etc/neutron/l3_agent.ini
-    - source: salt://openstack/compute/files/{{ openstack.version }}/l3_agent.ini
+    - source: salt://openstack/network/files/{{ openstack.version }}/l3_agent.ini
     - user: neutron
     - group: neutron
     - mode: 644
     - template: jinja
     - context:
-        data: {{ compute.l3_agent }}
+        data: {{ compute.l3_agent | default({}) }}
   service.running:
     - enable: True
     - reload: True
@@ -90,13 +90,13 @@ configure-ml2-plugin:
 "neutron-dhcp-agent":
   file.managed:
     - name: /etc/neutron/dhcp_agent.ini
-    - source: salt://openstack/compute/files/{{ openstack.version }}/dhcp_agent.ini
+    - source: salt://openstack/network/files/{{ openstack.version }}/dhcp_agent.ini
     - user: neutron
     - group: neutron
     - mode: 644
     - template: jinja
     - context:
-        data: {{ compute.dhcp_agent }}
+        data: {{ compute.dhcp_agent | default({}) }}
   service.running:
     - enable: True
     - reload: True
@@ -107,13 +107,13 @@ configure-ml2-plugin:
 "neutron-metadata-agent":
   file.managed:
     - name: /etc/neutron/metadata_agent.ini
-    - source: salt://openstack/compute/files/{{ openstack.version }}/metadata_agent.ini
+    - source: salt://openstack/network/files/{{ openstack.version }}/metadata_agent.ini
     - user: neutron
     - group: neutron
     - mode: 644
     - template: jinja
     - context:
-        data: {{ compute.metadata_agent }}
+        data: {{ compute.metadata_agent | default({}) }}
   service.running:
     - enable: True
     - reload: True
