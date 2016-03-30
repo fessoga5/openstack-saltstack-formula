@@ -1,6 +1,6 @@
 # vim: sts=2 ts=2 sw=2 et ai
-{% from "openstack/compute/map.jinja" import openstack with context %}
-{% from "openstack/compute/defaults.jinja" import compute with context %}
+{% from "openstack/network/map.jinja" import openstack with context %}
+{% from "openstack/network/defaults.jinja" import compute with context %}
 
 #Configure forwarding
 net.ipv4.ip_forward:
